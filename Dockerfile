@@ -1,13 +1,6 @@
-#FROM nginx/unit:1.26.1-minimal
-FROM nginx/unit:1.25.0-python3.9
+FROM python:3.7-slim
 
-
-WORKDIR /contract-app
-# #Install poppler required for PDF conversion
-
-COPY --chown=unit:unit ./config/config.json /docker-entrypoint.d/config.json
-
-COPY --chown=unit:unit . .
+WORKDIR /contact-app
 
 RUN apt-get clean \
      && apt-get --no-install-recommends --yes update \
@@ -15,19 +8,16 @@ RUN apt-get clean \
      && apt-get install python3-poppler-qt5 poppler-utils --no-install-recommends --yes \
      && rm -rf /var/lib/apt/lists/* \
      && apt-get clean \
-     && apt-get autoremove -y 
+     && apt-get autoremove -y
 
+COPY requirements.txt ./
 
-COPY requirements.txt .
+RUN pip install -r requirements.txt \
+    && rm -rf /root/.cache/pip
 
-RUN pip3 install -r requirements.txt
-
-RUN chown -R unit:unit /contract-app
+COPY . .
 
 EXPOSE 80
 
-
-
-
-
+CMD ["gunicorn", "-b", "0.0.0.0:80", "-k", "uvicorn.workers.UvicornWorker", "app_.app:api"]
 
