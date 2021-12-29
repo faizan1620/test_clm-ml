@@ -40,10 +40,13 @@ def pdf_to_text(file: UploadFile = File(...)):
         page_text = find_text(save_path + '/' + img)
         contract_pages_list.append(page_text)
     contract_text = "\n".join(contract_pages_list)
+    with open(contract_name + '.txt', "w") as f:
+            f.write(contract_text)
     output = {'output':{contract_text}}
     response.update(output)
     remove(contract_name)
-    return response
+    #return response
+    return {'status':'success'}
  except Exception as e:
      logger.info(e)
      return {'contract_file_name':'Unknown'}

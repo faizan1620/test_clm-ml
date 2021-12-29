@@ -23,19 +23,16 @@ def orientation_check(size):
 
 def pdf_to_images_with_orient(pdf, out):
     images = convert_from_path(pdf, fmt='jpeg')
- 
     i = 1
-    j = 2
-    k = 1
     for image in images:
         orient = orientation_check(image.size)
         if orient == 'landscape':
+            j = i + 1
             double_split(image, i, j, pdf, out)
             i = i + 2
-            j = i + 1
         else:
-            image.save(out + '/'+ str(k) + '.jpg', 'JPEG')
-            k = k + 1
+            image.save(out + '/'+ str(i) + '.jpg', 'JPEG')
+            i = i + 1
 
 def double_split(original, a_side, b_side, filename, output_folder):
     # Downscale
